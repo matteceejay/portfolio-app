@@ -6,14 +6,9 @@ jobs:
     build:
         runs-on: ubuntu-latest
         steps:
-            - name: uptime
-              run: uptime
-            - name: number processor
-              run: nproc
-
-    test:
-        needs: build
-        runs-on: ubuntu-latest
-        steps:
-            - name: hello
-              run: echo hello
+            - name: checkout code
+              uses: actions/checkout@v4
+            - name: Build image
+              run: docker build -t matteceejay/portfolio-app
+            - name: List images
+              run: docker images
