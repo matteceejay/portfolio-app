@@ -15,4 +15,4 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: hello
-              run: echohello
+              run: echo hello
