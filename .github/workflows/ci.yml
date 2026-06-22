@@ -11,8 +11,8 @@ jobs:
               
             - name: Build image
               run: |
-                docker build -t ${{secrets.DOCKER_USERNAME}}/porfolio-app:${{github.run_number}} .
-                docker build -t ${{secrets.DOCKER_USERNAME/portfolio-app.
+                docker build -t ${{secrets.DOCKER_USERNAME}}/portfolio-app:${{github.run_number}} .
+                docker build -t ${{secrets.DOCKER_USERNAME}}/portfolio-app:latest .
                 
             - name: Docker Login
               uses: docker/login-action@v4
@@ -22,20 +22,20 @@ jobs:
                 
             - name: Push image to registry
               run: |
-                docker push ${{secrets.DOCKER_USERNAME}}/porfolio-app:${{github.run_number}}
-                docker push ${{secrets.DOCKER_USERNAME}}/porfolio-app
+                docker push ${{secrets.DOCKER_USERNAME}}/portfolio-app:${{github.run_number}}
+                docker push ${{secrets.DOCKER_USERNAME}}/portfolio-app:latest
 
-        deploy:
-            needs: build
-            runs-on: ubuntu-latest
-            steps:
-              - name: SSH to Linux and run a container
-                uses: appleboy/ssh-action@v1
-                with:
-                  host: ${{ secrets.HOST }}
-                  username: ${{ secrets.SSH_USERNAME }}
-                  key: ${{ secrets.PRIVATE_KEY }}
-              script: |
+    deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+            - name: SSH to Linux and run a container
+              uses: appleboy/ssh-action@v1
+              with:
+                host: ${{ secrets.HOST }}
+                username: ${{ secrets.SSH_USERNAME }}
+                key: ${{ secrets.PRIVATE_KEY }}
+                script: |
                   docker rm -f portfolio || echo "Container not found, skipping removal."
-                  docker rmi -f ${{secrets.DOCKER_USERNAME}}/ciportofolio || echo "image do not exist"
-                  docker run -d --name portfolio -p 8080:80 ${{secrets.DOCKER_USERNAME}}/ciportofolio
+                  docker rmi -f ${{secrets.DOCKER_USERNAME}}/portfolio-app || echo "Image does not exist"
+                  docker run -d --name portfolio -p 8080:80 ${{secrets.DOCKER_USERNAME}}/portfolio-app:latest
